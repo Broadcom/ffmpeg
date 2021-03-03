@@ -56,6 +56,9 @@ static const HWContextType * const hw_table[] = {
 #if CONFIG_VIDEOTOOLBOX
     &ff_hwcontext_type_videotoolbox,
 #endif
+#if CONFIG_VKAPI
+    &ff_hwcontext_type_vkapi,
+#endif
 #if CONFIG_MEDIACODEC
     &ff_hwcontext_type_mediacodec,
 #endif
@@ -75,6 +78,7 @@ static const char *const hw_type_names[] = {
     [AV_HWDEVICE_TYPE_VAAPI]  = "vaapi",
     [AV_HWDEVICE_TYPE_VDPAU]  = "vdpau",
     [AV_HWDEVICE_TYPE_VIDEOTOOLBOX] = "videotoolbox",
+    [AV_HWDEVICE_TYPE_VKAPI]  = "vkapi",
     [AV_HWDEVICE_TYPE_MEDIACODEC] = "mediacodec",
     [AV_HWDEVICE_TYPE_VULKAN] = "vulkan",
 };
@@ -497,6 +501,27 @@ int av_hwframe_transfer_data(AVFrame *dst, const AVFrame *src, int flags)
         }
     }
     return 0;
+}
+
+int av_hwframe_ref(AVFrame *frame)
+{
+    int ret = 0;
+    if (frame->hw_frames_ctx) {
+        AVHWFramesContext *ctx = (AVHWFramesContext*)frame->hw_frames_ctx->data;
+        if (ctx->internal->hw_type->frames_ref_buffer)
+            ret = ctx->internal->hw_type->frames_ref_buffer(frame);
+    }
+
+    return ret;
+}
+
+void av_hwframe_release_buffer(AVFrame *frame)
+{
+    if (frame->hw_frames_ctx) {
+        AVHWFramesContext *ctx = (AVHWFramesContext*)frame->hw_frames_ctx->data;
+        if (ctx->internal->hw_type->frames_release_buffer)
+            ctx->internal->hw_type->frames_release_buffer(frame);
+    }
 }
 
 int av_hwframe_get_buffer(AVBufferRef *hwframe_ref, AVFrame *frame, int flags)

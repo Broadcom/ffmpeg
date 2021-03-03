@@ -22,6 +22,7 @@
 #include "common.h"
 #include "dict.h"
 #include "frame.h"
+#include "hwcontext.h"
 #include "imgutils.h"
 #include "mem.h"
 #include "samplefmt.h"
@@ -493,7 +494,7 @@ int av_frame_ref(AVFrame *dst, const AVFrame *src)
         dst->nb_extended_buf = src->nb_extended_buf;
 
         for (i = 0; i < src->nb_extended_buf; i++) {
-            dst->extended_buf[i] = av_buffer_ref(src->extended_buf[i]);
+            dst->extended_buf[i] = av_buffer_ref(dst);
             if (!dst->extended_buf[i]) {
                 ret = AVERROR(ENOMEM);
                 goto fail;
@@ -530,6 +531,9 @@ int av_frame_ref(AVFrame *dst, const AVFrame *src)
 
     memcpy(dst->data,     src->data,     sizeof(src->data));
     memcpy(dst->linesize, src->linesize, sizeof(src->linesize));
+
+    if (dst->hw_frames_ctx)
+        av_hwframe_ref(dst);
 
     return 0;
 
@@ -571,6 +575,9 @@ FF_DISABLE_DEPRECATION_WARNINGS
     av_buffer_unref(&frame->qp_table_buf);
 FF_ENABLE_DEPRECATION_WARNINGS
 #endif
+
+    if (frame->hw_frames_ctx)
+        av_hwframe_release_buffer(frame);
 
     av_buffer_unref(&frame->hw_frames_ctx);
 

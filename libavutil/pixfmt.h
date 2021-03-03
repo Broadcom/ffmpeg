@@ -226,6 +226,12 @@ enum AVPixelFormat {
      */
     AV_PIX_FMT_MMAL,
 
+    /**
+     * HW acceleration through VKAPI, data[3] contains a pointer to the
+     * vkil_buffer_surface structure.
+     */
+    AV_PIX_FMT_VKAPI,
+
     AV_PIX_FMT_D3D11VA_VLD,  ///< HW decoding through Direct3D11 via old API, Picture.data[3] contains a ID3D11VideoDecoderOutputView pointer
 
     /**

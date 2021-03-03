@@ -36,6 +36,7 @@ enum AVHWDeviceType {
     AV_HWDEVICE_TYPE_DRM,
     AV_HWDEVICE_TYPE_OPENCL,
     AV_HWDEVICE_TYPE_MEDIACODEC,
+    AV_HWDEVICE_TYPE_VKAPI,
     AV_HWDEVICE_TYPE_VULKAN,
 };
 
@@ -369,6 +370,23 @@ AVBufferRef *av_hwframe_ctx_alloc(AVBufferRef *device_ctx);
  * @return 0 on success, a negative AVERROR code on failure
  */
 int av_hwframe_ctx_init(AVBufferRef *ref);
+
+/**
+ * allow to release HW specific attached to frame
+ * (that is opaque handle AVHWFramesContext:hwctx)
+ *
+ * @param hwframe_ctx a reference to an AVHWFramesContext
+ * @param frame to release
+ */
+void av_hwframe_release_buffer(AVFrame *frame);
+
+/*
+ * Allow attached hw to add a reference on a buffer
+ *
+ * @param hwframe_ctx a reference to an AVHWFramesContext
+ * @return 0 on success, a negative AVERROR code on failure
+ */
+int av_hwframe_ref(AVFrame *frame);
 
 /**
  * Allocate a new frame attached to the given AVHWFramesContext.

@@ -770,6 +770,8 @@ extern AVCodec ff_h264_qsv_encoder;
 extern AVCodec ff_h264_v4l2m2m_encoder;
 extern AVCodec ff_h264_vaapi_encoder;
 extern AVCodec ff_h264_videotoolbox_encoder;
+extern AVCodec ff_h264_vkapi_decoder;
+extern AVCodec ff_h264_vkapi_encoder;
 #if FF_API_NVENC_OLD_NAME
 extern AVCodec ff_nvenc_encoder;
 extern AVCodec ff_nvenc_h264_encoder;
@@ -784,6 +786,8 @@ extern AVCodec ff_hevc_qsv_encoder;
 extern AVCodec ff_hevc_v4l2m2m_encoder;
 extern AVCodec ff_hevc_vaapi_encoder;
 extern AVCodec ff_hevc_videotoolbox_encoder;
+extern AVCodec ff_hevc_vkapi_decoder;
+extern AVCodec ff_hevc_vkapi_encoder;
 extern AVCodec ff_libkvazaar_encoder;
 extern AVCodec ff_mjpeg_cuvid_decoder;
 extern AVCodec ff_mjpeg_qsv_encoder;
@@ -807,6 +811,8 @@ extern AVCodec ff_vp9_cuvid_decoder;
 extern AVCodec ff_vp9_mediacodec_decoder;
 extern AVCodec ff_vp9_qsv_decoder;
 extern AVCodec ff_vp9_vaapi_encoder;
+extern AVCodec ff_vp9_vkapi_decoder;
+extern AVCodec ff_vp9_vkapi_encoder;
 extern AVCodec ff_vp9_qsv_encoder;
 
 // The iterate API is not usable with ossfuzz due to the excessive size of binaries created

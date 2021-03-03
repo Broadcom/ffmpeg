@@ -268,8 +268,20 @@ static int decode_unregistered_user_data(H264SEIUnregistered *h, GetBitContext *
     if (!user_data)
         return AVERROR(ENOMEM);
 
+#define SOC_11521 1
+#ifndef SOC_11521
     for (i = 0; i < size; i++)
         user_data[i] = get_bits(gb, 8);
+#else
+    av_log(logctx, AV_LOG_INFO, "SEI Unregistered USER Data Start\n");
+    for (i = 0; i < size; i++) {
+        user_data[i] = get_bits(gb, 8);
+        //print characters between ' ' and '~'
+        if (user_data[i] >= ' ' && user_data[i] <= '~')
+            av_log(logctx, AV_LOG_INFO, "%c", user_data[i]);
+    }
+    av_log(logctx, AV_LOG_INFO, "\n SEI Unregistered USER Data End\n");
+#endif
 
     user_data[i] = 0;
     e = sscanf(user_data + 16, "x264 - core %d", &build);

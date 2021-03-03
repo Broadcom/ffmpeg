@@ -41,6 +41,9 @@
 #include "libavutil/parseutils.h"
 #include "libavutil/pixdesc.h"
 #include "libavutil/pixfmt.h"
+#if CONFIG_VKAPI
+#include "vkil_api.h"
+#endif
 
 #define DEFAULT_PASS_LOGFILENAME_PREFIX "ffmpeg2pass"
 
@@ -136,6 +139,9 @@ const HWAccel hwaccels[] = {
 #endif
 #if CONFIG_LIBMFX
     { "qsv",   qsv_init,   HWACCEL_QSV,   AV_PIX_FMT_QSV },
+#endif
+#if CONFIG_VKAPI
+    { "vkapi", vkapi_init, HWACCEL_VKAPI, AV_PIX_FMT_VKAPI },
 #endif
     { 0 },
 };
@@ -545,6 +551,23 @@ static int opt_vaapi_device(void *optctx, const char *opt, const char *arg)
     err = hw_device_init_from_string(tmp, NULL);
     av_free(tmp);
     return err;
+}
+#endif
+
+#if CONFIG_VKAPI
+static int opt_vkapi_device(void *optctx, const char *opt, const char *arg)
+{
+    return vkil_set_affinity(arg);
+}
+
+static int opt_vkapi_processing_pri(void *optctx, const char *opt, const char *arg)
+{
+    return vkil_set_processing_pri(arg);
+}
+
+static int opt_vkapi_log_level(void *optctx, const char *opt, const char *arg)
+{
+    return vkil_set_log_level(arg);
 }
 #endif
 
@@ -3765,6 +3788,15 @@ const OptionDef options[] = {
 #if CONFIG_QSV
     { "qsv_device", HAS_ARG | OPT_STRING | OPT_EXPERT, { &qsv_device },
         "set QSV hardware device (DirectX adapter index, DRM path or X11 display name)", "device"},
+#endif
+
+#if CONFIG_VKAPI
+    { "vkapi_device", HAS_ARG | OPT_EXPERT, { .func_arg = opt_vkapi_device },
+        "set vkapi hardware device", "device"},
+    { "vkapi_pri", HAS_ARG | OPT_EXPERT, { .func_arg = opt_vkapi_processing_pri },
+        "set vkapi processing priority", "priority - high, med, low" },
+    { "vkapi_log", HAS_ARG | OPT_EXPERT, { .func_arg = opt_vkapi_log_level },
+        "set vkapi log level", "log-level - dbg, info, warn, err, panic" },
 #endif
 
     { "init_hw_device", HAS_ARG | OPT_EXPERT, { .func_arg = opt_init_hw_device },

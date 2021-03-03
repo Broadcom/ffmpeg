@@ -394,8 +394,15 @@ int attribute_align_arg avcodec_send_frame(AVCodecContext *avctx, const AVFrame 
     if (!avcodec_is_open(avctx) || !av_codec_is_encoder(avctx->codec))
         return AVERROR(EINVAL);
 
-    if (avctx->internal->draining)
+    if (avctx->internal->draining) {
+        if (!frame) {
+            /* OK to call muliple times, but need sending EOS once */
+            av_log(avctx, AV_LOG_DEBUG, "Request to send EOS multiple times.\n");
+            return 0;
+        }
+
         return AVERROR_EOF;
+    }
 
     if (!frame) {
         avctx->internal->draining = 1;

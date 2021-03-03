@@ -81,6 +81,8 @@ typedef struct HWContextType {
     void             (*frames_uninit)(AVHWFramesContext *ctx);
 
     int              (*frames_get_buffer)(AVHWFramesContext *ctx, AVFrame *frame);
+    int              (*frames_ref_buffer)(AVFrame *frame);
+    void             (*frames_release_buffer)(AVFrame *frame);
     int              (*transfer_get_formats)(AVHWFramesContext *ctx,
                                              enum AVHWFrameTransferDirection dir,
                                              enum AVPixelFormat **formats);
@@ -172,6 +174,7 @@ extern const HWContextType ff_hwcontext_type_qsv;
 extern const HWContextType ff_hwcontext_type_vaapi;
 extern const HWContextType ff_hwcontext_type_vdpau;
 extern const HWContextType ff_hwcontext_type_videotoolbox;
+extern const HWContextType ff_hwcontext_type_vkapi;
 extern const HWContextType ff_hwcontext_type_mediacodec;
 extern const HWContextType ff_hwcontext_type_vulkan;
 

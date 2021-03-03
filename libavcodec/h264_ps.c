@@ -603,9 +603,17 @@ int ff_h264_decode_seq_parameter_set(GetBitContext *gb, AVCodecContext *avctx,
     if (!sps->sar.den)
         sps->sar.den = 1;
 
+#define SOC_11521 1
+#ifdef SOC_11521
+    // always log sps info
+    if (1) {
+        static const char csp[4][5] = { "Gray", "420", "422", "444" };
+        av_log(avctx, AV_LOG_INFO,
+#else
     if (avctx->debug & FF_DEBUG_PICT_INFO) {
         static const char csp[4][5] = { "Gray", "420", "422", "444" };
         av_log(avctx, AV_LOG_DEBUG,
+#endif
                "sps:%u profile:%d/%d poc:%d ref:%d %dx%d %s %s crop:%u/%u/%u/%u %s %s %"PRId32"/%"PRId32" b%d reo:%d\n",
                sps_id, sps->profile_idc, sps->level_idc,
                sps->poc_type,
@@ -876,8 +884,14 @@ int ff_h264_decode_picture_parameter_set(GetBitContext *gb, AVCodecContext *avct
     if (pps->chroma_qp_index_offset[0] != pps->chroma_qp_index_offset[1])
         pps->chroma_qp_diff = 1;
 
+ #ifdef SOC_11521
+    if (1) { // always log pps info
+        av_log(avctx, AV_LOG_INFO,
+ #else
+
     if (avctx->debug & FF_DEBUG_PICT_INFO) {
         av_log(avctx, AV_LOG_DEBUG,
+  #endif
                "pps:%u sps:%u %s slice_groups:%d ref:%u/%u %s qp:%d/%d/%d/%d %s %s %s %s\n",
                pps_id, pps->sps_id,
                pps->cabac ? "CABAC" : "CAVLC",
